@@ -24,24 +24,19 @@ public class PatrolState : BaseState //State for patrolling enemy
         {
             if(!lastVisited1) //if not at patrol point 1 go to patrol point 1
             {
-                Debug.Log("If 1");
                 GoalNode = Grid.instance.NodeFromWorldPoint(machine.PatrolPoint1);
-                machine.a.FindPath(machine.gameObject.transform.position, machine.PatrolPoint1);
                 lastVisited1 = true;
             }
             else if(lastVisited1) //else if not at patrol point 2 go to patrol point 2
             {
-                Debug.Log("If 2");
                 GoalNode = Grid.instance.NodeFromWorldPoint(machine.PatrolPoint2);
-                machine.a.FindPath(machine.gameObject.transform.position, machine.PatrolPoint2);
                 lastVisited1 = false;
             }
             else //else go to a random point (should not be called unless there is an issue with the patrol points
             {
-                Debug.Log("If 3");
                 GoalNode = Grid.instance.RandomPoint();
-                machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
             }
+            machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
         }
         machine.a.follow = true;
         started = false;

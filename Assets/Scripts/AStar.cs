@@ -7,6 +7,7 @@ public class AStar : MonoBehaviour
 {
     Grid g; //will store the grid reference
     public List<Node> p; //list to store the path
+    List<Node> path = new List<Node>();
     public GameObject target; //target object (possible to not be used)
     public GameObject searcher; //object that will follow the path (the enemy object the script is attached to)
 
@@ -102,7 +103,6 @@ public class AStar : MonoBehaviour
 
     void TracePath(Node start, Node Finish) //reverses the path to the correct order and stores in the path
     {
-        List<Node> path = new List<Node>(); //stores list for the oath
         Node curr = Finish; // current node set to last node
 
         while(curr != start) //while the current node is not the start node
@@ -115,23 +115,23 @@ public class AStar : MonoBehaviour
 
         pathFound = true; //set pathfound bool to true
 
-        g.path = path; //sets the grid path to the path (only for debugging purposes)
+       // g.path = path; //sets the grid path to the path (only for debugging purposes)
     }
 
 
     public IEnumerator followingPath() //coroutine to follow the path
     {
-        Vector3 currentPoint = g.path[targetIndex].worldPos; //gets current point of the target node
+        Vector3 currentPoint = path[targetIndex].worldPos; //gets current point of the target node
         while (follow) //while the follow bool is set to true
         {
             if ((int)searcher.transform.position.x == (int)currentPoint.x && (int)searcher.transform.position.z == (int)currentPoint.z)
             {
                 targetIndex++;// Move to the next target node if the current one is reached
-                if (targetIndex >= g.path.Count)
+                if (targetIndex >= path.Count)
                 {
                     yield break; // Exit the coroutine if all nodes are visite
                 }
-                currentPoint = g.path[targetIndex].worldPos; // Update the position of the current target node
+                currentPoint = path[targetIndex].worldPos; // Update the position of the current target node
             }
             searcher.transform.position = Vector3.MoveTowards(searcher.transform.position, currentPoint, Time.deltaTime * 10.0f); // Move towards the current target node
             yield return null; 
