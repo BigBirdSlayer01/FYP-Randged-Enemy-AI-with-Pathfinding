@@ -1,0 +1,102 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class PatrolState : BaseState //State for patrolling enemy
+{
+    Vector3 GoalPosition;
+    Node GoalNode;
+    bool started;
+    Coroutine followingPathCoroutine;
+    bool lastVisited1;
+
+    public override void EnterState(StateMachine machine) //start method
+    {
+        Debug.Log("Entered Patrol State");
+        if(machine.UseRandomPoints) //called if using the random patrol points system
+        {
+            GoalNode = Grid.instance.RandomPoint();
+            machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
+        }
+        else //called if using static patrol points
+        {
+            if(!lastVisited1) //if not at patrol point 1 go to patrol point 1
+            {
+                Debug.Log("If 1");
+                GoalNode = Grid.instance.NodeFromWorldPoint(machine.PatrolPoint1);
+                machine.a.FindPath(machine.gameObject.transform.position, machine.PatrolPoint1);
+                lastVisited1 = true;
+            }
+            else if(lastVisited1) //else if not at patrol point 2 go to patrol point 2
+            {
+                Debug.Log("If 2");
+                GoalNode = Grid.instance.NodeFromWorldPoint(machine.PatrolPoint2);
+                machine.a.FindPath(machine.gameObject.transform.position, machine.PatrolPoint2);
+                lastVisited1 = false;
+            }
+            else //else go to a random point (should not be called unless there is an issue with the patrol points
+            {
+                Debug.Log("If 3");
+                GoalNode = Grid.instance.RandomPoint();
+                machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
+            }
+        }
+        machine.a.follow = true;
+        started = false;
+    }
+
+    public override void UpdateState(StateMachine machine) //update method
+    {
+        Casting(machine); //checks if the player can be seen
+
+        //ReachedPosition(machine); //checks if the enemy has reached the goal position
+
+        if(machine.a.pathFound) //checks if the path has been found
+        {
+            if(!started) //if has not started
+            {
+                machine.a.follow = true; //sets the follow to true
+                followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath()); //starts the coroutine to follow the path
+                started = true; //sets the started bool to true
+            }
+            ReachedPosition(machine); //checks if the enemy has reached the goal position
+        }
+    }
+
+    void ReachedPosition(StateMachine machine) //method that moves the enemy
+    {
+        //if the enemy reaches the destination switch back to the idle state
+        if ((int)machine.gameObject.transform.position.z == (int)GoalNode.worldPos.z && (int)machine.gameObject.transform.position.x == (int)GoalNode.worldPos.x)
+        {
+            //followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath());
+            machine.SwitchState(machine.idleState);
+        }
+    }
+
+    public void Casting(StateMachine machine) //checks if player can be seen
+    {
+        //checks the angle that the player is away from the gameobject for line of sight
+        Vector3 targetDirection = GameManager.instance.thePlayer.transform.position - machine.gameObject.transform.position;
+        float angleToTarget = Vector3.Angle(targetDirection, machine.transform.forward);
+        
+        //if the angle between the player and object is less than or equal to 50 fire a raycast
+        if(angleToTarget < 100)
+        {
+            float distanceToPlayer = targetDirection.magnitude;
+            Ray ray = new Ray(machine.gameObject.transform.position, targetDirection.normalized);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit, distanceToPlayer))
+            {
+                if(hit.collider.gameObject == GameManager.instance.thePlayer.gameObject)
+                {
+                    Debug.DrawLine(machine.gameObject.transform.position, GameManager.instance.thePlayer.transform.position, Color.blue, 1);
+                    machine.gameObject.transform.LookAt(GameManager.instance.thePlayer.transform.gameObject.transform); //look at the player
+                    machine.a.follow = false;
+                    machine.SwitchState(machine.combatState); //switch to combat state
+                }
+            }
+        }
+    }
+}
