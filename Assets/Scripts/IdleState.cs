@@ -27,16 +27,27 @@ public class IdleState : BaseState
         Casting(machine);
     }
 
-    public void Casting(StateMachine machine)
+    public void Casting(StateMachine machine) //checks if player can be seen
     {
-        var ray = new Ray(machine.thisObject.transform.position,machine.thisObject.transform.forward);
-        RaycastHit hit;
-        if(Physics.Raycast(ray, out hit, 100))
+        //checks the angle that the player is away from the gameobject for line of sight
+        Vector3 targetDirection = GameManager.instance.thePlayer.transform.position - machine.gameObject.transform.position;
+        float angleToTarget = Vector3.Angle(targetDirection, machine.transform.forward);
+
+        //if the angle between the player and object is less than or equal to 50 fire a raycast
+        if (angleToTarget < 100)
         {
-            if (hit.transform.gameObject == GameManager.instance.thePlayer)
+            float distanceToPlayer = targetDirection.magnitude;
+            Ray ray = new Ray(machine.gameObject.transform.position, targetDirection.normalized);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, distanceToPlayer))
             {
-                Debug.Log("Hit");
-                machine.SwitchState(machine.combatState);
+                if (hit.collider.gameObject == GameManager.instance.thePlayer.gameObject)
+                {
+                    Debug.DrawLine(machine.gameObject.transform.position, GameManager.instance.thePlayer.transform.position, Color.blue, 1);
+                    machine.gameObject.transform.LookAt(GameManager.instance.thePlayer.transform.gameObject.transform); //look at the player
+                    machine.a.follow = false;
+                    machine.SwitchState(machine.combatState); //switch to combat state
+                }
             }
         }
     }
