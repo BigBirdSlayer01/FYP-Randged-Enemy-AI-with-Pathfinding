@@ -77,7 +77,7 @@ public class PatrolState : BaseState //State for patrolling enemy
         float angleToTarget = Vector3.Angle(targetDirection, machine.transform.forward);
         
         //if the angle between the player and object is less than or equal to 50 fire a raycast
-        if(angleToTarget < 100)
+        if(angleToTarget < machine.ViewingAngle)
         {
             float distanceToPlayer = targetDirection.magnitude;
             Ray ray = new Ray(machine.gameObject.transform.position, targetDirection.normalized);

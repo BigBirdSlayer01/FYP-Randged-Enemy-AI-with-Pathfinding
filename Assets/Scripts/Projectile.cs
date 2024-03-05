@@ -6,10 +6,10 @@ using UnityEngine.PlayerLoop;
 
 public class Projectile : MonoBehaviour
 {
-    public Rigidbody rb;
-    public Collider coll;
-    public GameObject target;
-    public Vector3 startPos;
+    [HideInInspector] public Rigidbody rb;
+    [HideInInspector] public Collider coll;
+    [HideInInspector] public GameObject target;
+    [HideInInspector] public Vector3 startPos;
     float speed;
     float TimeToLive;
     public float drag; // stores the required drag of the bullet

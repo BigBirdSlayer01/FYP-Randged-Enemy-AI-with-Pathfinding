@@ -9,10 +9,11 @@ public class AStar : MonoBehaviour
     public List<Node> p; //list to store the path
     List<Node> path = new List<Node>();
     public GameObject target; //target object (possible to not be used)
-    public GameObject searcher; //object that will follow the path (the enemy object the script is attached to)
+    [HideInInspector] public GameObject searcher; //object that will follow the path (the enemy object the script is attached to)
 
-    public bool pathFound; //bool that will return true when path found 
-    public bool follow; //bool set to false when want to stop following the path
+
+    [HideInInspector] public bool pathFound; //bool that will return true when path found 
+    [HideInInspector] public bool follow; //bool set to false when want to stop following the path
     int targetIndex; //index of the node the target is on
 
     private void Awake()
