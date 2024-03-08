@@ -257,6 +257,7 @@ MonoBehaviour:
   PatrolPoint1: {x: -30, y: 1.047, z: -30.5}
   PatrolPoint2: {x: 40.1, y: 1.047, z: -30.5}
   UseRandomPoints: 1
+  ViewingAngle: 100
   PlayerLastKnow: {x: 0, y: 0, z: 0}
   thisObject: {fileID: 0}
   Projectile: {fileID: 2428033241861656336, guid: 2a2034f3f09ba8b4b9c4c69eea6872d2, type: 3}
@@ -565,6 +566,7 @@ GameObject:
   - component: {fileID: 375141921}
   - component: {fileID: 375141920}
   - component: {fileID: 375141923}
+  - component: {fileID: 375141924}
   m_Layer: 7
   m_Name: Cube (2)
   m_TagString: Untagged
@@ -666,6 +668,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &375141924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375141918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 408a5a226d5d1a74d98c3721d39f68cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWalkable: 0
 --- !u!1 &504562730
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,6 +694,7 @@ GameObject:
   - component: {fileID: 504562733}
   - component: {fileID: 504562732}
   - component: {fileID: 504562735}
+  - component: {fileID: 504562736}
   m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
@@ -780,6 +796,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &504562736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 504562730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 408a5a226d5d1a74d98c3721d39f68cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWalkable: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,6 +1046,7 @@ MonoBehaviour:
   PatrolPoint1: {x: 0, y: 0, z: 0}
   PatrolPoint2: {x: 0, y: 0, z: 0}
   UseRandomPoints: 0
+  ViewingAngle: 100
   PlayerLastKnow: {x: 0, y: 0, z: 0}
   thisObject: {fileID: 0}
   Projectile: {fileID: 2428033241861656336, guid: 2a2034f3f09ba8b4b9c4c69eea6872d2, type: 3}
@@ -1213,6 +1243,7 @@ GameObject:
   - component: {fileID: 1765264473}
   - component: {fileID: 1765264472}
   - component: {fileID: 1765264475}
+  - component: {fileID: 1765264476}
   m_Layer: 7
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -1314,6 +1345,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1765264476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765264470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 408a5a226d5d1a74d98c3721d39f68cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWalkable: 0
 --- !u!1 &2016239931
 GameObject:
   m_ObjectHideFlags: 0
@@ -1407,6 +1451,7 @@ MonoBehaviour:
   PatrolPoint1: {x: -30, y: 1.047, z: -40.23}
   PatrolPoint2: {x: 40.1, y: 1.047, z: -40.23}
   UseRandomPoints: 1
+  ViewingAngle: 100
   PlayerLastKnow: {x: 0, y: 0, z: 0}
   thisObject: {fileID: 0}
   Projectile: {fileID: 2428033241861656336, guid: 2a2034f3f09ba8b4b9c4c69eea6872d2, type: 3}

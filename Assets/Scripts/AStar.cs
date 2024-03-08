@@ -43,16 +43,6 @@ public class AStar : MonoBehaviour
 
         while(SetOpen.CountCheck > 0)
         {
-            //this is the old code for the open set now uses heap
-            //for(int i = 1; i < SetOpen.Count; i++)
-            //{
-            //    if (SetOpen[i].Cost < curr.Cost || SetOpen[i].Cost == curr.Cost && SetOpen[i].Cost < curr.Cost)
-            //    {
-            //        curr = SetOpen[i];
-            //    }
-            //}
-            //SetOpen.Remove(curr);
-
             Node curr = SetOpen.RemoveFirst(); //gets the node with the lowest cost from the open set stores in curr variable
 
             SetClosed.Add(curr); //adds the current node to the closed set

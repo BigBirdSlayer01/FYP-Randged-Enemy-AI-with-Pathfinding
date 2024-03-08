@@ -9,7 +9,6 @@ public class Grid : MonoBehaviour
 
     public Vector2 gridSize;
     public float NodeSize;
-    public LayerMask notWalkable;
     public Node[,] grid;
     public bool ShowDebugging;
 
@@ -81,21 +80,27 @@ public class Grid : MonoBehaviour
     {
         grid = new Node[gridXSize, gridYSize];
         Vector3 worldDownLeft = transform.position - Vector3.right * gridSize.x / 2 - Vector3.forward * gridSize.y / 2;
-        for(int x = 0; x < gridXSize; x++)
+        for (int x = 0; x < gridXSize; x++)
         {
             for (int y = 0; y < gridYSize; y++)
             {
-                bool walkable;
+                // Initialize walkable to true by default
+                bool walkable = true;
                 Vector3 WorldPos = worldDownLeft + Vector3.right * (x * NodeDiam + NodeSize) + Vector3.forward * (y * NodeDiam + NodeSize);
-                if(Physics.CheckSphere(WorldPos, NodeSize, notWalkable))
+
+                // Check for obstacles using the Obstacle script
+                Collider[] colliders = Physics.OverlapSphere(WorldPos, NodeSize);
+                foreach (Collider collider in colliders)
                 {
-                    walkable = false;
+                    Obstacle obstacle = collider.GetComponent<Obstacle>();
+                    if (obstacle != null && !obstacle.isWalkable)
+                    {
+                        walkable = false;
+                        break;
+                    }
                 }
-                else
-                {
-                    walkable = true; 
-                }
-                grid[x, y] = new Node(walkable, WorldPos , x, y);
+
+                grid[x, y] = new Node(walkable, WorldPos, x, y);
             }
         }
     }
