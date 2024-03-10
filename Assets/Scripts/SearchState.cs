@@ -17,6 +17,7 @@ public class SearchState : BaseState
     bool ReachedLastPos;
     bool started;
     Coroutine followingPathCoroutine;
+    Coroutine UpdatePath;
 
     public override void EnterState(StateMachine machine)
     {
@@ -45,6 +46,7 @@ public class SearchState : BaseState
                 Debug.Log("Starting Coroutine");
                 machine.a.follow = true;
                 followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath());
+                UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
                 started = true;
             }
         }
@@ -58,8 +60,16 @@ public class SearchState : BaseState
         {
             ReachedLastPos=true;
             machine.a.follow = false;
+            machine.StopCoroutine(UpdatePath);
             machine.SwitchState(machine.idleState);
         }
+    }
+
+    IEnumerator SearchPathAgain(StateMachine machine)
+    {
+        yield return new WaitForSeconds(machine.TimeToUpdatePath);
+        machine.a.FindPath(machine.gameObject.transform.position, LastPosNode);
+        UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
     }
 
     public void Casting(StateMachine machine) //checks if player can be seen
@@ -86,19 +96,6 @@ public class SearchState : BaseState
                     machine.SwitchState(machine.combatState); //switch to combat state
                 }
             }
-
-            //var ray = new Ray(machine.thisObject.transform.position, machine.thisObject.transform.forward); //creates the ray
-            //RaycastHit hit; //will store what object is hit
-            //if (Physics.Raycast(ray, out hit, 100)) //if ray hits something
-            //{
-            //    if (hit.transform.gameObject == GameManager.instance.thePlayer) //if the player is seen
-            //    {
-            //        //machine.agent.isStopped = true; //stops agent moving
-            //        machine.gameObject.transform.LookAt(hit.transform.gameObject.transform); //look at the player
-            //        Debug.Log("Hit");
-            //        machine.SwitchState(machine.combatState); //switch to combat state
-            //    }
-            //}
         }
     }
 }

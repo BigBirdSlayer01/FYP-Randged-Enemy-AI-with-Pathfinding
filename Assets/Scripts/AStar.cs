@@ -94,6 +94,8 @@ public class AStar : MonoBehaviour
 
     void TracePath(Node start, Node Finish) //reverses the path to the correct order and stores in the path
     {
+        path.Clear(); // Empty the path list
+
         Node curr = Finish; // current node set to last node
 
         while(curr != start) //while the current node is not the start node
@@ -106,7 +108,7 @@ public class AStar : MonoBehaviour
 
         pathFound = true; //set pathfound bool to true
 
-       // g.path = path; //sets the grid path to the path (only for debugging purposes)
+        //g.path = path; //sets the grid path to the path (only for debugging purposes)
     }
 
 

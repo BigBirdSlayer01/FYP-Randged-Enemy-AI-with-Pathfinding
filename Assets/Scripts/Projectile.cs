@@ -10,7 +10,7 @@ public class Projectile : MonoBehaviour
     [HideInInspector] public Collider coll;
     [HideInInspector] public GameObject target;
     [HideInInspector] public Vector3 startPos;
-    float speed;
+    public float speed = 700;
     float TimeToLive;
     public float drag; // stores the required drag of the bullet
     public float airDensity; // stores the air density
@@ -35,7 +35,6 @@ public class Projectile : MonoBehaviour
         coll.isTrigger = true;
         rb.mass = 0.1f;
         rb.angularDrag = 0;
-        speed = 700;
         TimeToLive = 10;
         rb.useGravity = false; //ensures rigidbodies gravity is not used
         rb.interpolation = RigidbodyInterpolation.None;
@@ -59,8 +58,6 @@ public class Projectile : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // this algorithm applies the 
-    // 
     IEnumerator SimulatePhysics() 
     {
         float time = 0; //initaites the time variable

@@ -30,6 +30,8 @@ public class StateMachine : MonoBehaviour
 
     [HideInInspector] public AStar a;
 
+    public int TimeToUpdatePath = 5; //wait time before checking path again, higher the number the higher the performance
+
     void Start()
     {
         currentState = idleState; //idle set as the default current state

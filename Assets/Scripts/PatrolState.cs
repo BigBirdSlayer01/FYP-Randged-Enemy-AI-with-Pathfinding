@@ -10,6 +10,7 @@ public class PatrolState : BaseState //State for patrolling enemy
     Node GoalNode;
     bool started;
     Coroutine followingPathCoroutine;
+    Coroutine UpdatePath;
     bool lastVisited1;
 
     public override void EnterState(StateMachine machine) //start method
@@ -54,8 +55,10 @@ public class PatrolState : BaseState //State for patrolling enemy
             {
                 machine.a.follow = true; //sets the follow to true
                 followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath()); //starts the coroutine to follow the path
+                UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
                 started = true; //sets the started bool to true
             }
+            
             ReachedPosition(machine); //checks if the enemy has reached the goal position
         }
     }
@@ -63,11 +66,19 @@ public class PatrolState : BaseState //State for patrolling enemy
     void ReachedPosition(StateMachine machine) //method that moves the enemy
     {
         //if the enemy reaches the destination switch back to the idle state
-        if ((int)machine.gameObject.transform.position.z == (int)GoalNode.worldPos.z && (int)machine.gameObject.transform.position.x == (int)GoalNode.worldPos.x)
+        if((int)machine.gameObject.transform.position.z == (int)GoalNode.worldPos.z && (int)machine.gameObject.transform.position.x == (int)GoalNode.worldPos.x)
         {
             //followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath());
+            machine.StopCoroutine(UpdatePath);
             machine.SwitchState(machine.idleState);
         }
+    }
+
+    IEnumerator SearchPathAgain(StateMachine machine)
+    {
+        yield return new WaitForSeconds(machine.TimeToUpdatePath);
+        machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
+        UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
     }
 
     public void Casting(StateMachine machine) //checks if player can be seen
