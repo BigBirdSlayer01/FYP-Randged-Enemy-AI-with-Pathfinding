@@ -7,8 +7,8 @@ using static UnityEngine.GraphicsBuffer;
 public class IdleState : BaseState
 {
     float WaitTime;
-    float minWait = 7.5f;
-    float maxWait = 12.5f;
+    float minWait = 1;//7.5f;
+    float maxWait = 2;//12.5f;
 
     public override void EnterState(StateMachine machine)
     {

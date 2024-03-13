@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 public class StateMachine : MonoBehaviour
 {
     //current state
-    BaseState currentState; // variable to hold base state variable
+    public BaseState currentState; // variable to hold base state variable
     //list of the states in game
     public IdleState idleState = new IdleState(); // idle state variable
     public SearchState searchState = new SearchState(); // search state variable
@@ -23,7 +23,7 @@ public class StateMachine : MonoBehaviour
 
     public int ViewingAngle = 100; //angle that the field of view is at
 
-    [HideInInspector] public Vector3 PlayerLastKnow; //used to store last player positiojn for search state
+    [HideInInspector] public Node PlayerLastKnow; //used to store last player positiojn for search state
 
     [HideInInspector] public GameObject thisObject; //the current game object
     public GameObject Projectile; //bullet game object

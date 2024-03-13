@@ -13,8 +13,7 @@ using UnityEngine;
 
 public class SearchState : BaseState
 {
-    Vector3 LastPosNode;
-    bool ReachedLastPos;
+    Node LastPosNode;
     bool started;
     Coroutine followingPathCoroutine;
     Coroutine UpdatePath;
@@ -23,8 +22,7 @@ public class SearchState : BaseState
     {
         Debug.Log("Entered Search State");
         LastPosNode = machine.PlayerLastKnow;
-        machine.a.FindPath(machine.gameObject.transform.position, LastPosNode);
-        ReachedLastPos = false;
+        machine.a.FindPath(machine.gameObject.transform.position, Grid.instance.WorldPointFromNode(LastPosNode));
         machine.a.follow = true;
         started = false;
     }
@@ -33,19 +31,13 @@ public class SearchState : BaseState
     {
         Casting(machine); //checks if the player can be seen
         ReachedPosition(machine);
-        //if the enemy has yet to reach the players last known position
-        if(!ReachedLastPos)
-        {
-            //machine.a.FindPath(machine.gameObject.transform.position, LastPosNode);
-            //machine.a.MoveAlongPath(); // move along the A* path
-        }
         if (machine.a.pathFound)
         {
             if (!started)
             {
                 Debug.Log("Starting Coroutine");
                 machine.a.follow = true;
-                followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath());
+                machine.a.FollowPath();
                 UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
                 started = true;
             }
@@ -56,9 +48,8 @@ public class SearchState : BaseState
     void ReachedPosition(StateMachine machine) //method that moves the enemy
     {
         //if the enemy reaches the destination switch back to the idle state
-        if ((int)machine.gameObject.transform.position.z == (int)LastPosNode.z && (int)machine.gameObject.transform.position.x == (int)LastPosNode.x)
+        if ((int)machine.gameObject.transform.position.z == (int)Grid.instance.WorldPointFromNode(LastPosNode).z && (int)machine.gameObject.transform.position.x == (int)Grid.instance.WorldPointFromNode(LastPosNode).x)
         {
-            ReachedLastPos=true;
             machine.a.follow = false;
             machine.StopCoroutine(UpdatePath);
             machine.SwitchState(machine.idleState);
@@ -68,8 +59,11 @@ public class SearchState : BaseState
     IEnumerator SearchPathAgain(StateMachine machine)
     {
         yield return new WaitForSeconds(machine.TimeToUpdatePath);
-        machine.a.FindPath(machine.gameObject.transform.position, LastPosNode);
-        UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
+        if (machine.a.follow && machine.currentState == machine.searchState)
+        {
+            machine.a.FindPath(machine.gameObject.transform.position, Grid.instance.WorldPointFromNode(LastPosNode));
+            UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
+        }
     }
 
     public void Casting(StateMachine machine) //checks if player can be seen

@@ -19,6 +19,7 @@ public class CombatState : BaseState
     { 
         RaycastHit hit; //stores the object that the ray hits
         Ray ray = new Ray(machine.thisObject.transform.position, machine.thisObject.transform.forward); //creates a ray
+        Vector3 pos = new Vector3();
         if(Physics.Raycast(ray, out hit)) //if the ray hits
         {
             if(hit.transform.gameObject != GameManager.instance.thePlayer) //if not the player this may be bad re look at it
@@ -36,7 +37,10 @@ public class CombatState : BaseState
                 GameObject projectile = GameObject.Instantiate(machine.Projectile, machine.transform.position, Quaternion.identity);
                 projectile.GetComponent<Projectile>().startPos = machine.transform.position;
                 projectile.gameObject.GetComponent<Projectile>().target = hit.transform.gameObject;
-                machine.PlayerLastKnow = hit.transform.position;
+                pos.x = (int)hit.transform.position.x;
+                pos.y = (int)hit.transform.position.y;
+                pos.z = (int)hit.transform.position.z;
+                machine.PlayerLastKnow = Grid.instance.NodeFromWorldPoint(pos);
             }
         }
     }

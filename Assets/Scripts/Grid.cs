@@ -1,21 +1,17 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 
-public class Grid : MonoBehaviour 
+public class Grid : MonoBehaviour
 {
-    public List<Node> path;
+    [HideInInspector] public List<Node> path;
+    [HideInInspector] public Vector2 gridSize;
+    [HideInInspector] public float nodeSize;
+    [HideInInspector] public Node[,] nodeGrid;
 
-    public Vector2 gridSize;
-    public float NodeSize;
-    public Node[,] grid;
-    public bool ShowDebugging;
-
-    float NodeDiam;
+    float nodeDiameter;
     int gridXSize;
     int gridYSize;
-
 
     public static Grid instance;
 
@@ -24,51 +20,7 @@ public class Grid : MonoBehaviour
         instance = this;
     }
 
-    private void OnDrawGizmos()
-    {
-        if(ShowDebugging)
-        {
-            Gizmos.DrawWireCube(transform.position, new Vector3(gridSize.x, 1, gridSize.y));
-            if (grid != null)
-            {
-                Node playerNode = NodeFromWorldPoint(GameManager.instance.thePlayer.transform.position);
-                foreach (Node n in grid)
-                {
-                    if (n.Walkable)
-                    {
-                        Gizmos.color = Color.white;
-                    }
-                    else
-                    {
-                        Gizmos.color = Color.red;
-                    }
-                    if (playerNode == n)
-                    {
-                        Gizmos.color = Color.yellow;
-                    }
-                    if (path != null)
-                    {
-                        if (path.Contains(n))
-                        {
-                            Gizmos.color = Color.blue;
-                        }
-                    }
-                    Gizmos.DrawCube(n.worldPos, Vector3.one * (NodeDiam - 0.1f));
-                }
-            }
-        }
-    }
-
-    private void Start()
-    {
-        NodeDiam = NodeSize * 2;
-        gridXSize = Mathf.RoundToInt(gridSize.x / NodeDiam);
-        gridYSize = Mathf.RoundToInt(gridSize.y / NodeDiam);
-        CreateGrid();
-    }
-
-    //returns the Max size of the grid;
-    public int Max
+    public int MaxSize
     {
         get
         {
@@ -76,92 +28,122 @@ public class Grid : MonoBehaviour
         }
     }
 
-    void CreateGrid()
+    public void InitializeGrid()
     {
-        grid = new Node[gridXSize, gridYSize];
+        nodeDiameter = nodeSize * 2;
+        gridXSize = (int)(gridSize.x / nodeDiameter);
+        gridYSize = (int)(gridSize.y / nodeDiameter);
+    }
+
+    public void CreateNodeGrid()
+    {
+        nodeGrid = new Node[gridXSize, gridYSize];
         Vector3 worldDownLeft = transform.position - Vector3.right * gridSize.x / 2 - Vector3.forward * gridSize.y / 2;
+
         for (int x = 0; x < gridXSize; x++)
         {
             for (int y = 0; y < gridYSize; y++)
             {
-                // Initialize walkable to true by default
-                bool walkable = true;
-                Vector3 WorldPos = worldDownLeft + Vector3.right * (x * NodeDiam + NodeSize) + Vector3.forward * (y * NodeDiam + NodeSize);
+                bool isWalkable = true;
+                Vector3 worldPos = worldDownLeft + Vector3.right * (x * nodeDiameter + nodeSize) + Vector3.forward * (y * nodeDiameter + nodeSize);
 
-                // Check for obstacles using the Obstacle script
-                Collider[] colliders = Physics.OverlapSphere(WorldPos, NodeSize);
+                Collider[] colliders = Physics.OverlapSphere(worldPos, nodeSize);
                 foreach (Collider collider in colliders)
                 {
                     Obstacle obstacle = collider.GetComponent<Obstacle>();
                     if (obstacle != null && !obstacle.isWalkable)
                     {
-                        walkable = false;
+                        isWalkable = false;
                         break;
                     }
                 }
 
-                grid[x, y] = new Node(walkable, WorldPos, x, y);
+                nodeGrid[x, y] = new Node(isWalkable, worldPos, x, y);
             }
         }
     }
 
-    public Node NodeFromWorldPoint(Vector3 Pos)
+    public Node NodeFromWorldPoint(Vector3 position)
     {
-        float perX = (Pos.x + gridSize.x / 2) / gridSize.x;
-        float perY = (Pos.z + gridSize.y / 2) / gridSize.y;
-        perX = Mathf.Clamp01(perX);
-        perY = Mathf.Clamp01(perY);
+        float percentX = (position.x + gridSize.x / 2) / gridSize.x;
+        float percentY = (position.z + gridSize.y / 2) / gridSize.y;
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
 
-        int x = Mathf.RoundToInt((gridXSize - 1) * perX);
-        int y = Mathf.RoundToInt((gridYSize - 1) * perY);
+        int x = Mathf.RoundToInt((gridXSize - 1) * percentX);
+        int y = Mathf.RoundToInt((gridYSize - 1) * percentY);
 
-        return grid[x, y];
+        return nodeGrid[x, y];
     }
 
-    public List<Node> Neighbours(Node n)
+    public List<Node> GetNeighbours(Node node)
     {
-        List<Node> nList = new List<Node>();
+        List<Node> neighboursList = new List<Node>();
 
-        for(int x =-1; x <= 1; x++)
+        for (int xOffset = -1; xOffset <= 1; xOffset++)
         {
-            for (int y = -1; y <= 1; y++)
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
             {
-                if(x == 0 && y == 0)
+                if (xOffset == 0 && yOffset == 0)
                 {
                     continue;
                 }
-                int xCheck = n.X + x;
-                int yCheck = n.Y + y;
 
-                if(xCheck >= 0 && xCheck < gridXSize && yCheck >= 0 && yCheck < gridYSize)
+                int xCheck = node.X + xOffset;
+                int yCheck = node.Y + yOffset;
+
+                if (xCheck >= 0 && xCheck < gridXSize && yCheck >= 0 && yCheck < gridYSize)
                 {
-                    nList.Add(grid[xCheck, yCheck]);
+                    neighboursList.Add(nodeGrid[xCheck, yCheck]);
                 }
             }
         }
 
-        return nList;
+        return neighboursList;
     }
 
-    public Node RandomPoint()
+    public Node GetRandomWalkableNode()
     {
-        List<Node> WalkableNodes = new List<Node>();
-        foreach(Node n in grid)
+        List<Node> walkableNodes = new List<Node>(nodeGrid.Cast<Node>().Where(node => node.Walkable));
+
+        if (walkableNodes.Count > 0)
         {
-            if(n.Walkable)
-            {
-                WalkableNodes.Add(n);
-            }
-        }
-        if(WalkableNodes.Count > 0)
-        {
-            int rand = Random.Range(0, WalkableNodes.Count);
-            return WalkableNodes[rand];
+            int randomIndex = Random.Range(0, walkableNodes.Count);
+            return walkableNodes[randomIndex];
         }
         else
         {
             Debug.Log("No Walkable Nodes found");
             return null;
+        }
+    }
+
+    //calculates the heuristic using octile distance
+    public float CalculateHCost(Node currentNode, Node targetNode)
+    {
+        int dx = Mathf.Abs(currentNode.X - targetNode.X);
+        int dy = Mathf.Abs(currentNode.Y - targetNode.Y);
+
+        int F = 14; // Movement cost for diagonal movement
+        int D = 10; // Movement cost for horizontal/vertical movement
+
+        float h = F * Mathf.Min(dx, dy) + D * Mathf.Abs(dx - dy);
+
+        return h;
+    }
+
+    public int GetDist(Node a, Node b) //will check how many nodes away the node is away from the target Position
+    {
+        int DistanceX = Mathf.Abs(a.X - b.X);
+        int DistanceY = Mathf.Abs(a.Y - b.Y);
+
+        if (DistanceX < DistanceY)
+        {
+            return 14 * DistanceY + 10 * (DistanceX - DistanceY);
+        }
+        else
+        {
+            return 14 * DistanceX + 10 * (DistanceY - DistanceX);
         }
     }
 

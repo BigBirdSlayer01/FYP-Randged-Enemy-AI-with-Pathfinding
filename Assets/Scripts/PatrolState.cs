@@ -18,7 +18,7 @@ public class PatrolState : BaseState //State for patrolling enemy
         Debug.Log("Entered Patrol State");
         if(machine.UseRandomPoints) //called if using the random patrol points system
         {
-            GoalNode = Grid.instance.RandomPoint();
+            GoalNode = Grid.instance.GetRandomWalkableNode();
             machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
         }
         else //called if using static patrol points
@@ -35,7 +35,7 @@ public class PatrolState : BaseState //State for patrolling enemy
             }
             else //else go to a random point (should not be called unless there is an issue with the patrol points
             {
-                GoalNode = Grid.instance.RandomPoint();
+                GoalNode = Grid.instance.GetRandomWalkableNode();
             }
             machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
         }
@@ -54,7 +54,7 @@ public class PatrolState : BaseState //State for patrolling enemy
             if(!started) //if has not started
             {
                 machine.a.follow = true; //sets the follow to true
-                followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath()); //starts the coroutine to follow the path
+                machine.a.FollowPath(); //starts the coroutine to follow the path
                 UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
                 started = true; //sets the started bool to true
             }
@@ -69,16 +69,19 @@ public class PatrolState : BaseState //State for patrolling enemy
         if((int)machine.gameObject.transform.position.z == (int)GoalNode.worldPos.z && (int)machine.gameObject.transform.position.x == (int)GoalNode.worldPos.x)
         {
             //followingPathCoroutine = machine.a.StartCoroutine(machine.a.followingPath());
-            machine.StopCoroutine(UpdatePath);
             machine.SwitchState(machine.idleState);
         }
     }
 
     IEnumerator SearchPathAgain(StateMachine machine)
     {
+
         yield return new WaitForSeconds(machine.TimeToUpdatePath);
-        machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
-        UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
+        if(machine.a.follow && machine.currentState == machine.patrolState)
+        {
+            machine.a.FindPath(machine.gameObject.transform.position, GoalNode.worldPos);
+            UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
+        }   
     }
 
     public void Casting(StateMachine machine) //checks if player can be seen
@@ -100,6 +103,7 @@ public class PatrolState : BaseState //State for patrolling enemy
                     Debug.DrawLine(machine.gameObject.transform.position, GameManager.instance.thePlayer.transform.position, Color.blue, 1);
                     machine.gameObject.transform.LookAt(GameManager.instance.thePlayer.transform.gameObject.transform); //look at the player
                     machine.a.follow = false;
+                    machine.StopCoroutine(UpdatePath);
                     machine.SwitchState(machine.combatState); //switch to combat state
                 }
             }

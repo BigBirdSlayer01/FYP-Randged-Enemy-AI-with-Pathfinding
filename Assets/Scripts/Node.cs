@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node : IHeapItem<Node>
+public class Node
 {
     public bool Walkable;
     public Vector3 worldPos;
@@ -40,15 +40,5 @@ public class Node : IHeapItem<Node>
         {
             index = value;
         }
-    }
-
-    public int CompareTo(Node n)
-    {
-        int compare = Cost.CompareTo(n.Cost);
-        if(compare == 0)
-        {
-            compare = h.CompareTo(n.h);
-        }
-        return -compare;
     }
 }
