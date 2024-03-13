@@ -10,8 +10,10 @@ public class Projectile : MonoBehaviour
     [HideInInspector] public Collider coll;
     [HideInInspector] public GameObject target;
     [HideInInspector] public Vector3 startPos;
+    [Header("Bullet Speed")]
     public float speed = 700;
     float TimeToLive;
+    [Header("Used for Bullet Drop Off")]
     public float drag; // stores the required drag of the bullet
     public float airDensity; // stores the air density
 

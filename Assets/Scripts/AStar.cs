@@ -14,6 +14,9 @@ public class AStar : MonoBehaviour
 
     [HideInInspector] public bool pathFound; //bool that will return true when path found 
     [HideInInspector] private bool _follow; //bool set to false when want to stop following the path
+
+    [Header("Choose Heuristic Method")]
+    public HeuristicMethod Heuristic = new HeuristicMethod(); //will decide which heuristic method that will be used
     public bool follow
     {
         get { return _follow; }
@@ -43,7 +46,7 @@ public class AStar : MonoBehaviour
 
     public void FindPath(Vector3 start, Vector3 target)
     {
-        Pathfinding.aStar(start, target, ref g, ref targetIndex, ref path, ref pathFound); //calls the find path method from the pathfinding class
+        Pathfinding.aStar(start, target, ref g, ref targetIndex, ref path, ref pathFound, Heuristic); //calls the find path method from the pathfinding class
     }
     
     public void FollowPath()
@@ -53,7 +56,6 @@ public class AStar : MonoBehaviour
 
     IEnumerator followingPath() //coroutine to follow the path
     {
-        Debug.Log("Follow = " + follow);
         Vector3 currentPoint = path[targetIndex].worldPos; //gets current point of the target node
         while (follow) //while the follow bool is set to true
         {
@@ -82,7 +84,7 @@ public class AStar : MonoBehaviour
 
     private class Pathfinding // the class used to find the path
     {
-        public static void aStar(Vector3 start, Vector3 target, ref Grid g, ref int targetIndex, ref List<Node> path, ref bool pathFound)
+        public static void aStar(Vector3 start, Vector3 target, ref Grid g, ref int targetIndex, ref List<Node> path, ref bool pathFound, HeuristicMethod Heuristic)
         {
             targetIndex = 0;
             Node startingNode = g.NodeFromWorldPoint(start); //gets the node from the world point
@@ -98,7 +100,7 @@ public class AStar : MonoBehaviour
                 float MinCost = float.MaxValue; // creates a float and sets it to the max posible float value
                 foreach(Node node in openSet) //for each node in the open set
                 {
-                    float cost = node.Cost + g.CalculateHCost(node, endNode); //calculates the heuristic cost using a mehtod in grid
+                    float cost = node.Cost + CalculateHCost(node, endNode, Heuristic); //calculates the heuristic cost using a mehtod in grid
                     if (cost < MinCost) // if the cost is less than min cost
                     {
                         MinCost = cost; // sets the min cost to the calculated cost value
@@ -130,7 +132,7 @@ public class AStar : MonoBehaviour
                     if(!openSet.Contains(n) || gVal < n.g)
                     {
                         n.g = (int)gVal; //sets the g value
-                        n.h = (int)g.CalculateHCost(n, endNode); //sets the new heuristic cost 
+                        n.h = (int)CalculateHCost(n, endNode, Heuristic); //sets the new heuristic cost 
                         n.parent = currentNode; //sets the parent of the neighbour to the current node
 
                         if(!openSet.Contains(n)) //if the open set does not contain the neighbour
@@ -141,6 +143,30 @@ public class AStar : MonoBehaviour
 
                 }
             }
+        }
+
+        static float CalculateHCost(Node startNode, Node endNode, HeuristicMethod Heuristic)
+        {
+            float h = 0;
+
+            if(Heuristic == HeuristicMethod.Octile)
+            {
+                h = Grid.instance.CalculateOctileHeuristic(startNode, endNode); //sets the heuristic using the Octile method
+            }
+            else if(Heuristic == HeuristicMethod.Euclidean)
+            {
+                h = Grid.instance.CalculateEuclideanHeuristic(startNode, endNode); //sets the heuristic using the Euclidean method
+            }
+            else if (Heuristic == HeuristicMethod.Diagonal)
+            {
+                h = Grid.instance.CalculateDiagonalHeuristic(startNode, endNode); //sets the heuristic using the Diagonal method
+            }
+            else if (Heuristic == HeuristicMethod.Manhattan)
+            {
+                h = Grid.instance.CalculateManhattanHeuristic(startNode, endNode); //sets the heuristic using the Manhattan method
+            }
+
+            return h; //returns the heuristic value 
         }
 
         static void TracePath(Node start, Node Finish, ref List<Node> path, ref bool pathFound) //reverses the path to the correct order and stores in the path
@@ -157,7 +183,7 @@ public class AStar : MonoBehaviour
 
             path.Reverse(); // reverses path to make it from start to finish
 
-            for (int i = 0; i < path.Count - 1; i++)
+            for (int i = 0; i < path.Count - 1; i++) //draws the line for debugging purposes
             {
                 Debug.DrawLine(Grid.instance.WorldPointFromNode(path[i]), Grid.instance.WorldPointFromNode(path[i+1]), Color.red, 1.0f);
             }
@@ -165,4 +191,12 @@ public class AStar : MonoBehaviour
             pathFound = true; //set pathfound bool to true
         }
     }
+}
+
+public enum HeuristicMethod
+{
+    Octile,
+    Euclidean,
+    Manhattan,
+    Diagonal
 }

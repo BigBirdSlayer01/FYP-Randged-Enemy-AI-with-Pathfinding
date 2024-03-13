@@ -260,7 +260,7 @@ MonoBehaviour:
   thisObject: {fileID: 0}
   Projectile: {fileID: 2428033241861656336, guid: 2a2034f3f09ba8b4b9c4c69eea6872d2, type: 3}
   a: {fileID: 0}
-  TimeToUpdatePath: 5
+  TimeToUpdatePath: 1
 --- !u!114 &31870475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,6 +276,7 @@ MonoBehaviour:
   target: {fileID: 338263256}
   searcher: {fileID: 0}
   pathFound: 0
+  Heuristic: 0
 --- !u!1 &338263256
 GameObject:
   m_ObjectHideFlags: 0
@@ -933,6 +934,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridSize: {x: 100, y: 100}
   nodeSize: 0.5
+  Debugging: 0
 --- !u!114 &727354258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -947,6 +949,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridSize: {x: 0, y: 0}
   nodeSize: 0
+  Debugging: 0
 --- !u!1 &793759045
 GameObject:
   m_ObjectHideFlags: 0
@@ -986,6 +989,7 @@ MonoBehaviour:
   target: {fileID: 338263256}
   searcher: {fileID: 0}
   pathFound: 0
+  Heuristic: 0
 --- !u!195 &793759047
 NavMeshAgent:
   m_ObjectHideFlags: 0

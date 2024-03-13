@@ -8,6 +8,7 @@ public class Grid : MonoBehaviour
     [HideInInspector] public Vector2 gridSize;
     [HideInInspector] public float nodeSize;
     [HideInInspector] public Node[,] nodeGrid;
+    [HideInInspector] public bool Debugging = false;
 
     float nodeDiameter;
     int gridXSize;
@@ -50,14 +51,16 @@ public class Grid : MonoBehaviour
                 Collider[] colliders = Physics.OverlapSphere(worldPos, nodeSize);
                 foreach (Collider collider in colliders)
                 {
-                    Obstacle obstacle = collider.GetComponent<Obstacle>();
-                    if (obstacle != null && !obstacle.isWalkable)
+                    if(collider.GetComponent<Obstacle>() != null)
                     {
-                        isWalkable = false;
-                        break;
+                        Obstacle obstacle = collider.GetComponent<Obstacle>();
+                        if (obstacle != null && !obstacle.isWalkable)
+                        {
+                            isWalkable = false;
+                            break;
+                        }
                     }
                 }
-
                 nodeGrid[x, y] = new Node(isWalkable, worldPos, x, y);
             }
         }
@@ -119,7 +122,7 @@ public class Grid : MonoBehaviour
     }
 
     //calculates the heuristic using octile distance
-    public float CalculateHCost(Node currentNode, Node targetNode)
+    public float CalculateOctileHeuristic(Node currentNode, Node targetNode)
     {
         int dx = Mathf.Abs(currentNode.X - targetNode.X);
         int dy = Mathf.Abs(currentNode.Y - targetNode.Y);
@@ -128,6 +131,39 @@ public class Grid : MonoBehaviour
         int D = 10; // Movement cost for horizontal/vertical movement
 
         float h = F * Mathf.Min(dx, dy) + D * Mathf.Abs(dx - dy);
+
+        return h;
+    }
+
+    //calculates the heuristic using Manhattan distance
+    public float CalculateManhattanHeuristic(Node currentNode, Node targetNode)
+    {
+        int dx = Mathf.Abs(currentNode.X - targetNode.X);
+        int dy = Mathf.Abs(currentNode.Y - targetNode.Y);
+
+        float h = dx + dy;
+
+        return h;
+    }
+
+    // calculates the heuristic using Euclidean distance
+    public float CalculateEuclideanHeuristic(Node currentNode, Node targetNode)
+    {
+        float dx = Mathf.Abs(currentNode.X - targetNode.X);
+        float dy = Mathf.Abs(currentNode.Y - targetNode.Y);
+
+        float h = Mathf.Sqrt(dx * dx + dy * dy);
+
+        return h;
+    }
+
+    // calculates the heuristic using Diagonal distance
+    public float CalculateDiagonalHeuristic(Node currentNode, Node targetNode)
+    {
+        int dx = Mathf.Abs(currentNode.X - targetNode.X);
+        int dy = Mathf.Abs(currentNode.Y - targetNode.Y);
+
+        float h = Mathf.Max(dx, dy);
 
         return h;
     }
@@ -150,5 +186,24 @@ public class Grid : MonoBehaviour
     public Vector3 WorldPointFromNode(Node node)
     {
         return node.worldPos;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (nodeGrid != null && Debugging)
+        {
+            foreach (Node node in nodeGrid)
+            {
+                if (node.Walkable)
+                {
+                    Gizmos.color = Color.white;
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
+                }
+                Gizmos.DrawCube(node.worldPos, Vector3.one * (nodeSize - 0.1f));
+            }
+        }
     }
 }
