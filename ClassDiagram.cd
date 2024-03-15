@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="StateMachine">
+    <Position X="17" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQAAAAAACAAAAACIgIAAAAAgAAEABEgBAAAAAgAIAQ=</HashCode>
+      <FileName>Assets\Scripts\StateMachine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BaseState">
+    <Position X="12" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IdleState">
+    <Position X="13" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQEAAQAAAAABQABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\IdleState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PatrolState">
+    <Position X="11" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAEAAAAAAAAAAAAAAgEQAAAAggAAAAUABAAAAAQ=</HashCode>
+      <FileName>Assets\Scripts\PatrolState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AStar">
+    <Position X="0.75" Y="3" Width="1.5" />
+    <NestedTypes>
+      <Class Name="AStar.Pathfinding" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\AStar.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AACAgAAAICAAAAAAIAQLAAAQAAAAAIAIAAAAEQAAAEA=</HashCode>
+      <FileName>Assets\Scripts\AStar.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Node">
+    <Position X="4.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAABAIAAAAAAAIQAgAAAABYEA=</HashCode>
+      <FileName>Assets\Scripts\Node.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Grid">
+    <Position X="2.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAEAAAAoAAAAAAAAQBSAAEACABAAAADAgIAEAEEC0A=</HashCode>
+      <FileName>Assets\Scripts\Grid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Projectile">
+    <Position X="22" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQBAAAAACAABAAOIAQAAAHIABAAAQAAAAIAAAAAAAI=</HashCode>
+      <FileName>Assets\Scripts\Projectile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CombatState">
+    <Position X="9" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAIAAAQAAAAAAAABAAABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\CombatState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SearchState">
+    <Position X="15" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAgEQAAAAggABAAUABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\SearchState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="HeuristicMethod">
+    <Position X="0.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAAAAABAEgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\AStar.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

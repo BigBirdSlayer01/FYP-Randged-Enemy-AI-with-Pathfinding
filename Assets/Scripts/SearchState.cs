@@ -15,6 +15,7 @@ public class SearchState : BaseState
 {
     Node LastPosNode;
     bool started;
+    bool seenPlayer;
     Coroutine followingPathCoroutine;
     Coroutine UpdatePath;
 
@@ -35,7 +36,6 @@ public class SearchState : BaseState
         {
             if (!started)
             {
-                Debug.Log("Starting Coroutine");
                 machine.a.follow = true;
                 machine.a.FollowPath();
                 UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
@@ -50,9 +50,12 @@ public class SearchState : BaseState
         //if the enemy reaches the destination switch back to the idle state
         if ((int)machine.gameObject.transform.position.z == (int)Grid.instance.WorldPointFromNode(LastPosNode).z && (int)machine.gameObject.transform.position.x == (int)Grid.instance.WorldPointFromNode(LastPosNode).x)
         {
-            machine.a.follow = false;
-            machine.StopCoroutine(UpdatePath);
-            machine.SwitchState(machine.idleState);
+            if(!seenPlayer)
+            {
+                machine.a.follow = false;
+                machine.StopCoroutine(UpdatePath);
+                machine.SwitchState(machine.idleState);
+            }
         }
     }
 
@@ -62,14 +65,19 @@ public class SearchState : BaseState
         if (machine.a.follow && machine.currentState == machine.searchState)
         {
             machine.a.FindPath(machine.gameObject.transform.position, Grid.instance.WorldPointFromNode(LastPosNode));
+            machine.StopCoroutine(UpdatePath);
             UpdatePath = machine.StartCoroutine(SearchPathAgain(machine));
+        }
+        else
+        {
+            yield break;
         }
     }
 
     public void Casting(StateMachine machine) //checks if player can be seen
     {
         //checks the angle that the player is away from the gameobject for line of sight
-        Vector3 targetDirection = GameManager.instance.thePlayer.transform.position - machine.gameObject.transform.position;
+        Vector3 targetDirection = machine.a.target.transform.position - machine.gameObject.transform.position;
         float angleToTarget = Vector3.Angle(targetDirection, machine.transform.forward);
 
         //if the angle between the player and object is less than or equal to 50 fire a raycast
@@ -81,13 +89,18 @@ public class SearchState : BaseState
             //if (Physics.Linecast(machine.gameObject.transform.position, GameManager.instance.thePlayer.transform.position) == false)
             if (Physics.Raycast(ray, out hit, distanceToPlayer))
             {
-                if (hit.collider.gameObject == GameManager.instance.thePlayer.gameObject)
+                if (hit.collider.gameObject == machine.a.target.gameObject)
                 {
-
-                    Debug.DrawLine(machine.gameObject.transform.position, GameManager.instance.thePlayer.transform.position, Color.blue, 1);
-                    machine.gameObject.transform.LookAt(GameManager.instance.thePlayer.transform.gameObject.transform); //look at the player
+                    seenPlayer = true;
+                    Debug.DrawLine(machine.gameObject.transform.position, machine.a.target.transform.position, Color.blue, 1);
+                    machine.gameObject.transform.LookAt(machine.a.target.transform.gameObject.transform); //look at the player
                     machine.a.follow = false;
+                    machine.StopCoroutine(UpdatePath);
                     machine.SwitchState(machine.combatState); //switch to combat state
+                }
+                else
+                {
+                    seenPlayer = false;
                 }
             }
         }

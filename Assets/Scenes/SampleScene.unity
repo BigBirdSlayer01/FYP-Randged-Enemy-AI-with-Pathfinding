@@ -260,7 +260,7 @@ MonoBehaviour:
   thisObject: {fileID: 0}
   Projectile: {fileID: 2428033241861656336, guid: 2a2034f3f09ba8b4b9c4c69eea6872d2, type: 3}
   a: {fileID: 0}
-  TimeToUpdatePath: 1
+  TimeToUpdatePath: 3
 --- !u!114 &31870475
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1384,7 +1384,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95cd156d149b9cb4e958858f30b4c98e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thePlayer: {fileID: 338263256}
 --- !u!4 &2036077651
 Transform:
   m_ObjectHideFlags: 0

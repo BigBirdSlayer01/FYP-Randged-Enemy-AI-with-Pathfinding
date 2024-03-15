@@ -68,6 +68,16 @@ public class AStar : MonoBehaviour
                 }
                 currentPoint = path[targetIndex].worldPos; // Update the position of the current target node
             }
+            // Calculate direction to move
+            Vector3 direction = currentPoint - searcher.transform.position;
+            direction.y = 0; // Ensure no rotation in the y-axis (vertical)
+
+            // Rotate the searcher to face the direction of movement
+            if (direction != Vector3.zero) // Check if there is a direction to move
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+                searcher.transform.rotation = Quaternion.Slerp(searcher.transform.rotation, targetRotation, Time.deltaTime * 2);
+            }
             searcher.transform.position = Vector3.MoveTowards(searcher.transform.position, currentPoint, Time.deltaTime * 10.0f); // Move towards the current target node
             yield return null;
         }
@@ -193,6 +203,7 @@ public class AStar : MonoBehaviour
     }
 }
 
+//enum used to decide whgich heuristic method to use for the A star pathfinding algorithm
 public enum HeuristicMethod
 {
     Octile,

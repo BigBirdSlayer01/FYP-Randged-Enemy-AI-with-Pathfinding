@@ -5,14 +5,16 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CombatState : BaseState
 {
+    Coroutine shooting;
     public override void EnterState(StateMachine machine)
     {
-        GameManager.instance.StartCoroutine(ShootCountDown(machine));
+        Debug.Log("Entered Combat State");
+        shooting = machine.StartCoroutine(ShootCountDown(machine));
     }
 
     public override void UpdateState(StateMachine machine)
     {
-        canSee(machine);
+
     }
 
     void fire(StateMachine machine) //for shooting at the player
@@ -22,18 +24,17 @@ public class CombatState : BaseState
         Vector3 pos = new Vector3();
         if(Physics.Raycast(ray, out hit)) //if the ray hits
         {
-            if(hit.transform.gameObject != GameManager.instance.thePlayer) //if not the player this may be bad re look at it
+            if(hit.transform.gameObject != machine.a.target) //if not the player this may be bad re look at it
             {
-                Debug.Log("blocked");
-                GameManager.instance.StopAllCoroutines();
+                machine.StopCoroutine(shooting);
                 machine.SwitchState(machine.searchState);
             }
-            else if(hit.transform.gameObject == GameManager.instance.thePlayer) //else if it is the player
+            else if(hit.transform.gameObject == machine.a.target) //else if it is the player
             {
                 Transform hitObject = hit.transform;
                 Debug.Log(hit.transform.name);
                 Debug.DrawRay(machine.thisObject.transform.position, machine.thisObject.transform.forward, Color.red);
-                Debug.DrawLine(machine.thisObject.transform.position, GameManager.instance.thePlayer.transform.position, Color.red, 1);
+                Debug.DrawLine(machine.thisObject.transform.position, machine.a.target.transform.position, Color.red, 1);
                 GameObject projectile = GameObject.Instantiate(machine.Projectile, machine.transform.position, Quaternion.identity);
                 projectile.GetComponent<Projectile>().startPos = machine.transform.position;
                 projectile.gameObject.GetComponent<Projectile>().target = hit.transform.gameObject;
@@ -49,17 +50,15 @@ public class CombatState : BaseState
     {
         fire(machine);
         yield return new WaitForSeconds(2);
-        machine.thisObject.transform.LookAt(GameManager.instance.thePlayer.transform);
-        GameManager.instance.StartCoroutine(ShootCountDown(machine));
-    }
-
-    void canSee(StateMachine machine)
-    {
-        if (!Physics.Linecast(machine.thisObject.transform.position, GameManager.instance.thePlayer.transform.position))
+        if(machine.currentState == machine.combatState)
         {
-            Debug.Log("blocked");
-            GameManager.instance.StopAllCoroutines();
-            machine.SwitchState(machine.idleState);
+            machine.thisObject.transform.LookAt(machine.a.target.transform);
+            shooting = machine.StartCoroutine(ShootCountDown(machine));
         }
+        else
+        {
+            yield break;
+        }
+        
     }
 }

@@ -7,8 +7,8 @@ using static UnityEngine.GraphicsBuffer;
 public class IdleState : BaseState
 {
     float WaitTime;
-    float minWait = 1;//7.5f;
-    float maxWait = 2;//12.5f;
+    float minWait = 7.5f;
+    float maxWait = 12.5f;
 
     public override void EnterState(StateMachine machine)
     {
@@ -30,7 +30,7 @@ public class IdleState : BaseState
     public void Casting(StateMachine machine) //checks if player can be seen
     {
         //checks the angle that the player is away from the gameobject for line of sight
-        Vector3 targetDirection = GameManager.instance.thePlayer.transform.position - machine.gameObject.transform.position;
+        Vector3 targetDirection = machine.a.target.transform.position - machine.gameObject.transform.position;
         float angleToTarget = Vector3.Angle(targetDirection, machine.transform.forward);
 
         //if the angle between the player and object is less than or equal to 50 fire a raycast
@@ -41,10 +41,10 @@ public class IdleState : BaseState
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, distanceToPlayer))
             {
-                if (hit.collider.gameObject == GameManager.instance.thePlayer.gameObject)
+                if (hit.collider.gameObject == machine.a.target.gameObject)
                 {
-                    Debug.DrawLine(machine.gameObject.transform.position, GameManager.instance.thePlayer.transform.position, Color.blue, 1);
-                    machine.gameObject.transform.LookAt(GameManager.instance.thePlayer.transform.gameObject.transform); //look at the player
+                    Debug.DrawLine(machine.gameObject.transform.position, machine.a.target.transform.position, Color.blue, 1);
+                    machine.gameObject.transform.LookAt(machine.a.target.transform.gameObject.transform); //look at the player
                     machine.a.follow = false;
                     machine.SwitchState(machine.combatState); //switch to combat state
                 }
